@@ -9,6 +9,7 @@ public class EmpMain {
 		// TODO Auto-generated method stub
 		
 		
+		
 		Scanner scan = new Scanner(System.in);
 		System.out.print("이름입력:");
 		String name = scan.next();
