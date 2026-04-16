@@ -1,0 +1,27 @@
+
+select lower(job),initcap(ename) from emp;
+select ename, sal from emp where ename=upper('scott');
+select ename, substr(ename,1,3) as substr from emp;
+select substr(lower(ename),1,1) from emp;
+select upper(substr(ename,1,1))||lower(substr(ename,2)) "upper<substr<ename" from emp;
+select ename, sal from emp where ename like '%M%';
+select ename, hiredate from emp where ename like '%EN%' or ename like '%IN%';
+select ename, sal from emp where job = 'SALESMAN' order by sal desc;
+select ename, sal, job from emp where ename like 'A%';
+select ename, sal, hiredate from emp where sal >= 1000 and sal <= 3000 order by hiredate asc;
+select ename, hiredate from emp where to_char(hiredate,'YY')='81';
+select ename from emp where instr(ename,'A')>0;
+select ename, rpad(sal,10,'*') from emp;
+select ename, length(ename) from emp;
+select ename, round(sysdate-hiredate) from emp;
+select round(months_between(sysdate, hiredate)) from emp;
+select add_months(sysdate,100) from dual;
+select next_day(sysdate,'월요일') from dual;
+select last_day(sysdate) from dual;
+select to_char(sysdate,'DAY') from dual;
+select ename, to_char(hiredate,'DAY') from emp;
+select hiredate, to_char(hiredate,'DAY') from emp 
+where to_char(hiredate, 'DAY')='목요일';
+select ename, to_char(sal,'999,999') from emp;
+select ename, nvl(comm,0) from emp;
+select ename, nvl(to_char(comm),'no comm') from emp;

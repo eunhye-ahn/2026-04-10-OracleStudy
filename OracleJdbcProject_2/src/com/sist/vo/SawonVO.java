@@ -16,7 +16,7 @@ HIRE_DATE          DATE
  */
 
 import java.util.*;
-
+//dto 역할
 public class SawonVO {
 	public int getEmpno() {
 		return empno;
@@ -107,7 +107,4 @@ public class SawonVO {
 	location, phone, intro, dbday, pay;
 	private Date hire_date;
 	
-	public static void main(String[] args) {
-		System.out.println(new Date());
-	}
 }
