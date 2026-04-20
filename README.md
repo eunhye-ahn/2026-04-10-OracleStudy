@@ -127,8 +127,6 @@ SELECT user_id, username, email  -- 민감 컬럼(password 등) 제외
 FROM users;
 ```
 
----
-
 ## 요약 : 언제 무엇을 쓸까?
 
 ```
@@ -136,6 +134,78 @@ FROM users;
 단순 조회, 소량 데이터 가상 컬럼  → 스칼라 서브쿼리
 대량 데이터, 성능 중요            → JOIN / 인라인 뷰
 여러 곳에서 재사용, 보안 필요     → VIEW
+```
+
+---
+
+# 시퀀스 (Sequence)
+
+> 테이블과 **독립적**으로 존재하는 번호 자동 생성 객체  
+> 주로 **기본키(PK) 값 자동 생성**에 활용
+
+---
+
+## 생성 문법
+
+```sql
+CREATE SEQUENCE seq_name
+    START WITH 1       -- 시작 번호
+    INCREMENT BY 1     -- 증가 단위
+    NOCACHE            -- 미리 번호를 생성하지 않고 처리
+    NOCYCLE;           -- 최대값 도달 시 순환하지 않음
+```
+
+---
+
+## 주요 옵션
+
+| 옵션 | 설명 |
+|------|------|
+| `START WITH n` | 시작 번호 지정 (기본값 : 1) |
+| `INCREMENT BY n` | 증가 단위 지정 (기본값 : 1) |
+| `NOCACHE` | 번호를 미리 생성하지 않고 순서대로 처리 |
+| `CACHE n` | n개의 번호를 미리 메모리에 생성 (성능 향상, 번호 공백 발생 가능) |
+| `NOCYCLE` | 최대값 도달 시 더 이상 생성하지 않음 |
+| `CYCLE` | 최대값 도달 시 다시 시작값으로 순환 |
+
+---
+
+## 사용 방법
+
+```sql
+-- 다음 값 가져오기 (호출할 때마다 증가)
+seq_name.NEXTVAL
+
+-- 현재 값 확인 (NEXTVAL 호출 후에만 사용 가능)
+seq_name.CURRVAL
+```
+
+### 테이블 INSERT 예시
+
+```sql
+INSERT INTO store (store_id, store_name)
+VALUES (seq_name.NEXTVAL, '맛있는 식당');
+```
+
+---
+
+## 주의사항
+
+- 시퀀스는 **테이블과 독립적** → 테이블 삭제해도 시퀀스는 남아있음
+- 시퀀스 삭제 후 재생성하면 번호가 **초기화**됨
+- `NOCACHE` 사용 시 번호 공백 없이 순서 보장, 단 성능은 `CACHE`보다 낮음
+- 한번 증가한 `NEXTVAL`은 **롤백해도 되돌아오지 않음**
+
+---
+
+## 삭제 / 수정
+
+```sql
+-- 삭제
+DROP SEQUENCE seq_name;
+
+-- 수정 (START WITH는 수정 불가 → 삭제 후 재생성 필요)
+ALTER SEQUENCE seq_name INCREMENT BY 2;
 ```
 
 ---
