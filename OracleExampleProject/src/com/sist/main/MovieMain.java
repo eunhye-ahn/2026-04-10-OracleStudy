@@ -1,37 +1,35 @@
-package com.sist.client;
+package com.sist.main;
 import java.awt.*;
-import com.sist.vo.*;
-import com.sist.dao.*;
-import java.util.List;
-
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import java.util.*;
+import java.util.List;
 
-//import com.sist.dao.BoardDAO;
-//import com.sist.vo.BoardVO;
-import java.awt.event.*;
-public class BoardList extends JPanel 
-implements ActionListener,MouseListener
-{
-    JButton inBtn,prevBtn,nextBtn;
+import com.sist.vo.*;
+
+import com.sist.dao.MovieDAO;
+public class MovieMain extends JFrame implements ActionListener, MouseListener{
+
+	JButton prevBtn,nextBtn;
     JLabel pageLa,titleLa;
     JTable table;
     DefaultTableModel model;
     TableColumn column;
-    int totalpage=0;
-    int curpage=1;
-    UserMainForm mf;
-    public BoardList(UserMainForm mf)
+    MovieDAO dao = new MovieDAO();
+    int curPage =1;
+    int totalPage =0;
+    
+    public MovieMain()
     {
-    	this.mf = mf;
-    	inBtn=new JButton("새글");//<input type=button value="새글">
+    	
     	prevBtn=new JButton("이전");
     	nextBtn=new JButton("다음");
     	pageLa=new JLabel("0 page / 0 pages"); //<label>0 page / 0 pages</label>
-    	titleLa=new JLabel("게시판",JLabel.CENTER);// <table>
+    	titleLa=new JLabel("영화 목록",JLabel.CENTER);// <table>
     	titleLa.setFont(new Font("맑은 고딕",Font.BOLD,30)); //<h3></h3>
     	
-    	String[] col={"번호","제목","이름","작성일","조회수"};//<tr><th></th>....</tr>
+    	String[] col={"번호","영화명","출연","개봉일","장르"};//<tr><th></th>....</tr>
     	String[][] row=new String[0][5];
     	// 한줄에 5개 데이터를 첨부 
     	model=new DefaultTableModel(row,col) // 데이터 관리
@@ -56,15 +54,15 @@ implements ActionListener,MouseListener
     		}
     		else if(i==1)
     		{
-    			column.setPreferredWidth(350);
+    			column.setPreferredWidth(150);
     		}
     		else if(i==2)
     		{
-    			column.setPreferredWidth(100);
+    			column.setPreferredWidth(250);
     		}
     		else if(i==3)
     		{
-    			column.setPreferredWidth(150);
+    			column.setPreferredWidth(200);
     		}
     		else if(i==4)
     		{
@@ -78,73 +76,72 @@ implements ActionListener,MouseListener
     	
     	// 배치 
     	setLayout(null);
-    	titleLa.setBounds(180, 15, 620, 50);
+    	titleLa.setBounds(10, 15, 820, 50);
+
     	add(titleLa);
-    	inBtn.setBounds(180, 70, 100, 30);
-    	add(inBtn);
-    	js.setBounds(180, 110, 600, 450);
+    	
+    	js.setBounds(10, 110, 800, 450);
     	add(js);
     	
     	JPanel p=new JPanel();
     	p.add(prevBtn);
     	p.add(pageLa);
     	p.add(nextBtn);
+
     	
-    	p.setBounds(180,570, 600, 35);
+    	p.setBounds(10, 570, 800, 35);
     	add(p);
+    	
+    	setSize(850, 730);
+    	setVisible(true);
+    	setDefaultCloseOperation(EXIT_ON_CLOSE);
+    	
+    	print();
     	
     	prevBtn.addActionListener(this);
     	nextBtn.addActionListener(this);
-    	inBtn.addActionListener(this);
     	table.addMouseListener(this);
-    	print();
     }
-    public void print()
-    {
-    	// 테이블 지우기 
-    	for(int i=model.getRowCount()-1;i>=0;i--)
-    	{
+    public void print(){
+    	//테이블 전체 지우기
+    	for(int i=model.getRowCount()-1;i>=0;i--) {
     		model.removeRow(i);
     	}
+    	//데이터읽기
+    	List<MovieVO> list = dao.movieListData(curPage);
+    	totalPage=dao.movieTotalPage();
     	
-    	//오라클연동
-    	BoardDAO dao = BoardDAO.newInstance();
-    	List<BoardVO> list = dao.board_list(curpage);
-    	totalpage = dao.boardTotalPage();
-    	
-    	for(BoardVO vo:list) {
-    		String[] data = {
-    				String.valueOf(vo.getNo()),
-    				vo.getSubject(),
-    				vo.getName(),
-    				vo.getDbday(),
-    				String.valueOf(vo.getHit())
+    	for(MovieVO vo : list) {
+    		String[] data= {
+    				String.valueOf(vo.getMno()),
+    				vo.getTitle(),
+    				vo.getActor(),
+    				vo.getRegdate(),
+    				vo.getGenre()
     		};
+    		
     		model.addRow(data);
     	}
-    	pageLa.setText(curpage + " page / " + totalpage + " pages");
+    	
+    	pageLa.setText(curPage+ " / " + totalPage);
     }
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+        new MovieMain();
+        
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource() == inBtn) {
-			mf.cp.bInsert.nameTf.setText("");
-			mf.cp.bInsert.subTf.setText("");
-			mf.cp.bInsert.ta.setText("");
-			mf.cp.bInsert.pwdPf.setText("");
-			
-			mf.cp.card.show(mf.cp, "BINSERT");
-			mf.cp.bInsert.nameTf.requestFocus();
-		}
-		else if(e.getSource()==prevBtn) {
-			if(curpage>1) {
-				curpage --;
+		if(e.getSource() == prevBtn) {
+			if(curPage>1) {
+				curPage--;
 				print();
 			}
 		}
-		else if(e.getSource()==nextBtn) {
-			if(curpage<totalpage) {
-				curpage ++;
+		if(e.getSource() == nextBtn) {
+			if(curPage<totalPage) {
+				curPage++;
 				print();
 			}
 		}
@@ -153,11 +150,19 @@ implements ActionListener,MouseListener
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource()==table) {
-			if(e.getClickCount()==2) {
+			if(e.getClickCount() ==2) {
+				//선택된 row 가져오기
 				int row = table.getSelectedRow();
-				String no = model.getValueAt(row, 0).toString();
-				mf.cp.card.show(mf.cp, "BDETAIL");
-				mf.cp.bDetail.print(Integer.parseInt(no));
+				String mno=model.getValueAt(row, 0).toString();
+				MovieVO vo = dao.movieDetail(Integer.parseInt(mno));
+				String msg = "번호: " + vo.getMno() + "\n"
+						+ "영화명: " + vo.getTitle() + "\n"
+						+ "장르: " + vo.getGenre() + "\n"
+						+ "출연: " + vo.getActor() + "\n"
+						+ "감독: " + vo.getDirector() + "\n"
+						+ "등급: " + vo.getGrade() + "\n"
+						+ "개봉일: " + vo.getRegdate();
+				JOptionPane.showMessageDialog(this, msg);
 			}
 		}
 	}
@@ -181,4 +186,5 @@ implements ActionListener,MouseListener
 		// TODO Auto-generated method stub
 		
 	}
+
 }

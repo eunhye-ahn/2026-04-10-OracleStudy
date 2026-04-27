@@ -8,9 +8,11 @@ import java.awt.event.*;
 
 public class UserMainForm extends JFrame
 implements ActionListener{
-	MenuPenal mp = new MenuPenal();
-	ControllerPenal cp = new ControllerPenal(this);
-	public UserMainForm() {
+	MenuPenal mp;
+    ControllerPenal cp;
+    public UserMainForm() {
+    	mp = new MenuPenal();
+    	cp = new ControllerPenal(this);
 		setLayout(null);
 		mp.setBounds(150, 15, 860, 35);
 //		mp.setBounds(10, 150, 120, 560 );
@@ -37,6 +39,7 @@ implements ActionListener{
 		// TODO Auto-generated method stub
 		if(e.getSource()==mp.b5) {
 			cp.card.show(cp, "BLIST");
+			cp.bList.print();
 		}else if(e.getSource()==mp.b1) {
 			cp.card.show(cp, "HOME");			
 		}

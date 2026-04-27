@@ -10,12 +10,21 @@ public class ControllerPenal extends JPanel{
 	UserMainForm mf;
 	BoardList bList;
 	HomePanel hp = new HomePanel();
+	BoardInsert bInsert;
+	BoardDetail bDetail;
+	BoardDelete bDelete;
 	public ControllerPenal(UserMainForm uf) {
-		this.mf = mf;
+		this.mf = uf;
 		bList = new BoardList(mf);
+		bInsert = new BoardInsert(mf);
+		bDetail = new BoardDetail(mf);
+		bDelete = new BoardDelete(mf);
 		setLayout(card);
 		setBackground(Color.cyan);
 		add("HOME",hp);
 		add("BLIST",bList);
+		add("BINSERT",bInsert);
+		add("BDETAIL",bDetail);
+		add("BDELETE",bDelete);
 	}
 }

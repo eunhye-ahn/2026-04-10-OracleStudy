@@ -1,15 +1,23 @@
 package com.sist.client;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
-public class BoardInsert extends JPanel{
+
+import com.sist.dao.BoardDAO;
+import com.sist.vo.BoardVO;
+public class BoardInsert extends JPanel implements ActionListener{
     JLabel titleLa,nameLa,subLa,contLa,pwdLa;
     JTextField nameTf,subTf;
     JPasswordField pwdPf;
     JTextArea ta;
     JButton b1,b2;
-    public BoardInsert()
+    UserMainForm mf;
+
+    public BoardInsert(UserMainForm mf)
     {
+    	this.mf=mf;
     	titleLa=new JLabel("글쓰기",JLabel.CENTER);// <table>
     	titleLa.setFont(new Font("맑은 고딕",Font.BOLD,30)); //<h3></h3>
     	setLayout(null);
@@ -47,10 +55,57 @@ public class BoardInsert extends JPanel{
     	b1=new JButton("글쓰기");
     	b2=new JButton("취소");
     	
+
+    	
     	JPanel p=new JPanel();
     	p.add(b1);p.add(b2);
     	p.setBounds(10, 435, 535, 35);
     	add(p);
     	
+    	b2.addActionListener(this);
+    	b1.addActionListener(this);
+    	
     }
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource()==b2) {
+			mf.cp.card.show(mf.cp, "BLIST");
+		}else if(e.getSource()==b1) {
+			String name=nameTf.getText();
+			if(name.trim().length()<1) {
+				nameTf.requestFocus();
+				return;
+			}
+			
+			String subject=subTf.getText();
+			if(subject.trim().length()<1) {
+				subTf.requestFocus();
+				return;
+			}
+			
+			String content=ta.getText();
+			if(content.trim().length()<1) {
+				ta.requestFocus();
+				return;
+			}
+			String pwd=String.valueOf(pwdPf.getPassword());
+			if(pwd.trim().length()<1) {
+				pwdPf.requestFocus();
+				return;
+			}
+			
+			BoardVO vo = new BoardVO();
+			vo.setName(name);
+			vo.setSubject(subject);
+			vo.setContent(content);
+			vo.setPwd(pwd);
+			
+			BoardDAO dao = BoardDAO.newInstance();
+			dao.board_insert(vo);
+			
+			mf.cp.card.show(mf.cp, "BLIST");
+		}
+	}
 }

@@ -48,13 +48,110 @@ public class BoardDAO {
 		}
 		return list;
 	}
-	
-	public static void main(String[] args) {
-		BoardDAO dao = BoardDAO.newInstance();
-		 
-		List<BoardVO> list = dao.board_list(1);
-		for(BoardVO vo : list) {
-			System.out.println(vo.getName());
+	//총페이지
+	public int boardTotalPage() {
+		int total = 0;
+		try {
+			//연결
+			conn = db.getConnection();
+			//sql문
+			String sql = "select ceil(count(*)/10.0) from board";
+			//전송
+			ps = conn.prepareStatement(sql);
+			//?가있는경우 값채우기
+			//실행
+			ResultSet rs = ps.executeQuery();
+			//출력된 메모리 위치에 커서이동
+			rs.next();
+			//해당데이터형이용해서 데이터 가지고오기
+			total=rs.getInt(1);
+			rs.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			db.disConnection(conn, ps);
+		}
+		return total;
+	}
+	//데이터추가
+	public void board_insert(BoardVO vo) {
+		try {
+			conn = db.getConnection();
+			String sql = "insert into board values("
+					+ "board_seq.nextval,?,?,?,?,"
+					+ "sysdate,0)";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, vo.getName());
+			ps.setString(2, vo.getSubject());
+			ps.setString(3, vo.getContent());
+			ps.setString(4, vo.getPwd());
+			ps.executeUpdate(); //db변경
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			db.disConnection(conn, ps);
 		}
 	}
+	
+	//상세보기
+	public BoardVO board_detail(int no) {
+		try {
+			BoardVO vo = new BoardVO();
+			conn = db.getConnection();
+			String sql = "update board set hit=hit+1 where no=?";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, no);
+			ps.executeUpdate();
+			
+			sql= "select no,name,subject,content,hit, to_char(regdate,'YYYY-MM-DD HH24:MI:SS') from board "
+					+ "where no=?";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, no);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			//값채우기
+			vo.setNo(rs.getInt(1));
+			vo.setName(rs.getString(2));
+			vo.setSubject(rs.getString(3));
+			vo.setContent(rs.getString(4));
+			vo.setHit(rs.getInt(5));
+			vo.setDbday(rs.getString(6));
+			rs.close();
+			return vo;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+
+			db.disConnection(conn, ps);
+		}
+		return null;
+	}
+	
+	//삭제
+	public boolean board_delete(int no, String pwd) {
+		boolean bCheck = false;
+		try {
+			conn=db.getConnection();
+			String sql = "select pwd from board where no = ?";
+			ps=conn.prepareStatement(sql);
+			ps.setInt(1, no);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			String db_pwd = rs.getString(1);
+			rs.close();
+			if(db_pwd.equals(pwd)) {
+				bCheck=true;
+				sql="delete from board where no=?";
+				ps=conn.prepareStatement(sql);
+				ps.setInt(1, no);
+				ps.executeUpdate();
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			db.disConnection(conn, ps);
+		}
+		return bCheck;
+	}
+	
 }
