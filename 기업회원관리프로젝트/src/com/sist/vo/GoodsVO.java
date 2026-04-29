@@ -14,15 +14,7 @@ HIT                        NUMBER
 
 public class GoodsVO {
 	
-	private int no,goods_discount,hit;
-	private String goods_name,goods_sub,goods_price,
-	goods_first_price,goods_delivery, goods_poster;
-	
-	
-	
-	
-	
-	public int getNo() {
+	  public int getNo() {
 		return no;
 	}
 	public void setNo(int no) {
@@ -76,5 +68,9 @@ public class GoodsVO {
 	public void setGoods_poster(String goods_poster) {
 		this.goods_poster = goods_poster;
 	}
-
+	  private int no,goods_discount,hit;
+	  private String goods_name,goods_sub,goods_price,
+	          goods_first_price,goods_delivery,goods_poster;
+	
+	
 }

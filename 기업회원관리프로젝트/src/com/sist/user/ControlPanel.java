@@ -7,17 +7,28 @@ import javax.swing.JPanel;
 
 // 화면 변경 
 public class ControlPanel extends JPanel{
-	UserMainFrame uf;
+	
 	// 1. HOME 
 	HomePanel hp;
+	GoodsDetailForm gdf;
+	JoinPanel jp;
+	MyPageForm mf;
+	AdminPageForm af;
 	CardLayout card=new CardLayout();
-    public ControlPanel(UserMainFrame uf)
+	String myId;
+    public ControlPanel()
     {
-    	this.uf=uf;
     	setBackground(Color.cyan);
     	setLayout(card);
-    	hp=new HomePanel(uf);
-    	
+    	hp=new HomePanel(this);
+    	gdf=new GoodsDetailForm(this);
+    	jp=new JoinPanel(this);
+    	mf=new MyPageForm(this);
+    	af=new AdminPageForm(this);
     	add("HOME",hp);
+    	add("DETAIL",gdf);
+    	add("JOIN",jp);
+    	add("MYPAGE",mf);
+    	add("ADMIN",af);
     }
 }
